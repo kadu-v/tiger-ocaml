@@ -20,7 +20,6 @@
 %token OF
 %token NIL
 
-
 %token COMMA
 %token COLON
 %token SEMICOLON
@@ -45,6 +44,10 @@
 %token OR
 %token ASSIGN
 %token EOF
+
+%token <string> ID
+%token <int> INT
+%token <string> STR
 
 %start <unit> program
 
