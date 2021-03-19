@@ -43,6 +43,15 @@ let test_tokens =
          test_token "&" AND "&";
          test_token "|" OR "|";
          test_token ":=" ASSIGN ":=";
+         test_token "INT1" (INT 0) "0";
+         test_token "INT2" (INT 10) "10";
+         test_token "INT3" (INT 2384859) "2384859";
+         test_token "id1" (ID "foo") "foo";
+         test_token "id2" (ID "bar") "bar";
+         test_token "id3" (ID "hogehoge") "hogehoge";
+         test_token "str1" (STR "foo") "\"foo\"";
+         test_token "str2" (STR "bar") "\"bar\"";
+         test_token "str3" (STR "hoge") "\"hoge\"";
        ]
 
 let () = run_test_tt_main test_tokens
