@@ -49,4 +49,8 @@ rule token = parse
     | "&"           { AND }
     | "|"           { OR }
     | ":="          { ASSIGN } 
+    | litint as num { INT (int_of_string num) }
+    | ident as id   { ID id }
+    | "\"" _* "\"" as str { let s = String.sub str 1 ((String.length str) - 2) in STR(s) } 
     | eof { EOF }
+    | _* as str { STR(str) }
