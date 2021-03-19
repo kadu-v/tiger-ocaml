@@ -1,4 +1,4 @@
 (executable
  (public_name ktiger)
  (name main)
- (libraries ktiger))
+ (libraries core))
