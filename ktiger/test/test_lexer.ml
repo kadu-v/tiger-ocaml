@@ -49,9 +49,12 @@ let test_tokens =
          test_token "id1" (ID "foo") "foo";
          test_token "id2" (ID "bar") "bar";
          test_token "id3" (ID "hogehoge") "hogehoge";
+         test_token "str0" (STR "") "\"\"";
          test_token "str1" (STR "foo") "\"foo\"";
          test_token "str2" (STR "bar") "\"bar\"";
          test_token "str3" (STR "hoge") "\"hoge\"";
+         test_token "str4" (STR "xx1") "\"xx1\"";
+         test_token "str5" (STR "xx_xs1") "\"xx_xs1\"";
        ]
 
 let () = run_test_tt_main test_tokens
