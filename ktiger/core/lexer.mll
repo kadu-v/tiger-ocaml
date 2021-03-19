@@ -10,6 +10,7 @@ let whitspaces = [' ' '\t' '\n' '\r']
 
 rule token = parse
     | whitspaces+ { token lexbuf }
+    | eof           { EOF }
     | "while"       { WHILE }
     | "for"         { FOR }
     | "to"          { TO }
@@ -51,6 +52,6 @@ rule token = parse
     | ":="          { ASSIGN } 
     | litint as num { INT (int_of_string num) }
     | ident as id   { ID id }
-    | "\"" _* "\"" as str { let s = String.sub str 1 ((String.length str) - 2) in STR(s) } 
-    | eof { EOF }
+    | "\"" _* "\"" as str { let s = String.sub str 1 ((String.length str) - 2) in STR(s) }
+    | "/*" _* "*/"        { token lexbuf } 
     | _* as str { STR(str) }
