@@ -2,20 +2,15 @@
 
 %}
 
-%token WHILE
-%token FOR
+%token WHILE FOR
 %token TO
 %token BREAK
-%token LET
-%token IN
-%token END
+%token LET IN END
 %token FUNCTION
 %token VAR
 %token TYPE
 %token ARRAY
-%token IF
-%token THEN
-%token ELSE
+%token IF THEN ELSE
 %token DO
 %token OF
 %token NIL
@@ -23,25 +18,12 @@
 %token COMMA
 %token COLON
 %token SEMICOLON
-%token LPAREN
-%token RPAREN
-%token LBRACKET
-%token RBRACKET
-%token LBRACE
-%token RBRACE
+%token LPAREN RPAREN
+%token LBRACKET RBRACKET
+%token LBRACE RBRACE
 %token DOT
-%token PLUS
-%token MINUS
-%token TIMES
-%token DIV
-%token EQ
-%token NEQ
-%token LT
-%token LTE
-%token GT
-%token GTE
-%token AND
-%token OR
+%token PLUS MINUS TIMES DIV
+%token EQ NEQ LT LTE GT GTE AND OR
 %token ASSIGN
 %token EOF
 
