@@ -1,0 +1,87 @@
+# Syntax of tiger
+
+## Lexical Syntax
+
+## Context-free Syntax
+
+<decs>          ::= { <dec> }
+
+
+<dec>           ::= <tydec>
+                |   <vardec>
+                |   <fundec>
+
+
+<tydec>         ::= "type" <type-id> "=" <ty>
+
+
+<ty>            ::= <type-id>
+                |   "{" <tyfields> "}"
+                |   "array" "of" <type-id>
+
+
+<tyfields>      ::= eps
+                |   <id> ":" <type-id> { "," <id> ":" <type-id> }
+
+
+
+<vardec>        ::= "var" <id> ":=" <exp>
+                |   "var" <id> ":" <type-id> ":=" <exp>
+
+
+
+<fundec>        ::= "function" <id> "(" <tyfields> ")" "=" <exp>
+                |   "function" <id> "(" <tyfields> ")" ":" type-id "=" <exp>
+
+
+<lvalue>        ::= <id>
+                |   <lvalue> "." <id>
+                |   <lvalue> "[" <exp> "]"
+
+<exp>           ::= <lvalue>
+                |   "nil"
+                |   <exp> { ";" <exp> }
+                |   <number>
+                |   <string>
+                |   <fun-call>
+                |   <arithmatic>
+                |   <comp>
+                |   <bool-comp>
+                |   <record-creation>
+                |   <array-creation>
+                |   <lvalue> ":=" <exp>
+                |   "if" <exp> "then" <exp> else <exp>
+                |   "if" <exp> "then" <exp>
+                |   "while" <exp> "do" <exp>
+                |   "for" <id> ":=" <exp> "to" <exp> do <exp>
+                |   "break"
+                |   "let" <decs> "in" <expseq> "end"
+                |   "(" <exp> ")"
+
+
+<fun-call>      ::= <id> "(" ")"
+                |   <id> "(" <exp> { "," <exp> }")"
+             
+
+<arithmatic>    ::= <exp> "+" <exp>
+                |   <exp> "-" <exp>
+                |   <exp> "*" <exp>
+                |   <exp> "/" <exp>
+                |   "-" <exp>
+
+
+<comp>          ::= <exp> "=" <exp>
+                |   <exp> "<>" <exp>
+                |   <exp> ">" <exp>
+                |   <exp> "<" <exp>
+                |   <exp> "<=" <exp>
+                |   <exp> ">=" <exp>
+
+<bool-comp>     ::= <exp> "&" <exp>
+                |   <exp> "|" <exp>
+
+
+<record-creation>   ::= <type-id> "{" <id> "=" <exp> { "," <id> "=" <exp> } "}"
+                    | <type-id> "{" "}"
+
+<array-creation>    ::= <type-id> "[" <exp> "]" of <exp>
