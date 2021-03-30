@@ -1,5 +1,8 @@
 open Core.Lexer
 open Core.Parser
+open Core.Absyn
+
+(* open Core.Absyn *)
 open Core.Util
 open OUnit2
 
@@ -21,10 +24,6 @@ let test_token_list name (expected : token list) (input : string) =
   assert_equal expected (string_tokenizer input) ~printer:show_token_list
     ~cmp:equal_token_list
 
-let show_unit u = match u with () -> "()"
-
-let equal_ast ast1 ast2 = match (ast1, ast2) with (), () -> true
-
-let test_parser name expected input =
+let test_parser name input expected =
   let ast = string_parser input in
-  name >:: fun _ -> assert_equal expected ast ~printer:show_unit ~cmp:equal_ast
+  name >:: fun _ -> assert_equal expected ast ~printer:show_exp ~cmp:equal_exp
