@@ -57,7 +57,8 @@ let test_tokens =
          test_token "str5" (STR "xx_xs1") "\"xx_xs1\"";
          test_token "comment" EOF "/*xxxxx*/";
          test_token "comment-nested" EOF "/*xxxxx /*yyy*/*/";
-         test_token "comment-nested-nested" EOF "/*xxxxx /*yyy*/ /*zzzz*/*/";
+         (* test_token "comment-nested-nested" (INT 1)
+            "/*xxxxx /*yyy*/ /*zzzz*/ */ 1 /* zzz*/"; *)
        ]
 
 let () = run_test_tt_main test_tokens

@@ -1,5 +1,6 @@
 {   
     type token = [%import: Parser.token] [@@deriving show, eq]
+    exception Error of string
 }
 
 let digit = ['0'-'9']
@@ -42,6 +43,7 @@ rule token = parse
     | "-"                   { MINUS }
     | "*"                   { TIMES }
     | "/"                   { DIV }
+    | "="                   { EQ }
     | "<>"                  { NEQ }
     | "<"                   { LT }
     | "<="                  { LTE }
@@ -54,4 +56,6 @@ rule token = parse
     | ident as id           { ID id }
     | "\"" _* "\"" as str   { let s = String.sub str 1 ((String.length str) - 2) in STR(s) }
     | "/*" _* "*/"          { token lexbuf } 
-    | _* as str             { STR(str) }
+    | _ as c                { raise (Error (Printf.sprintf "At offset %d: unexpected character %c.\n" (Lexing.lexeme_start lexbuf) c)) }
+
+    

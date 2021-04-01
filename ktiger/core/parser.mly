@@ -1,5 +1,6 @@
 %{ 
-
+      open Absyn
+      open Location
 %}
 
 %token WHILE "while" FOR "for"
@@ -31,11 +32,11 @@
 %token <int> INT
 %token <string> STR
 %token UMINUS
+%token LOWEST
 
-%start <unit> program
+%start <exp> program
 
-
-%nonassoc OF THEN DO
+%nonassoc FUNCTION OF THEN DO
 %nonassoc ELSE
 %nonassoc ASSIGN 
 
@@ -46,75 +47,82 @@
 %left TIMES DIV
 %nonassoc UMINUS
 
+
 %%
 
 program:
-      | exp EOF {  }
+      | e = exp EOF { e }
 
 exp:
-  | lvalue                                                  {  } 
-  | "nil"                                                   {  }
-  | "(" separated_list(";", exp) ")"                        {  }
-  | INT                                                     {  }
-  | STR                                                     {  }
-  | "-" exp %prec UMINUS                                    {  }
-  | exp binop exp                                           {  }
-  | ID "(" separated_list(",", exp) ")"                     {  }
-  | ID "{" separated_list(",", field) "}"                   {  }
-  | lvalue "[" exp "]" "of" exp                             {  }
-  | lvalue ":=" exp                                         {  }
-  | "if" exp "then" exp "else" exp                          {  } 
-  | "if" exp "then" exp                                     {  }
-  | "while" exp "do" exp                                    {  }
-  | "for" ID ":=" exp "to" exp "do" exp                     {  }
-  | BREAK                                                   {  }
-  | "let" list(dec) "in" separated_list(";", exp) "end"     {  }
+  | "nil"                                                               { NilExp { loc = to_location($startpos)} }
+  | i = INT                                                             { IntExp { value = i; loc = to_location($startpos) } }
+  | s = STR                                                             { StringExp { str = s; loc = to_location($startpos) } }
+  | "-" e = exp %prec UMINUS                                            { OpExp { oper = MinusOp; left = IntExp { value = 0; loc = to_location($startpos) }; right = e ; loc = to_location($startpos) } }
+  | left = exp oper = binop right = exp                                 { OpExp { oper = oper; left = left; right = right; loc = to_location($startpos)} }
+  | "(" exps = separated_list(";", exp) ")"                             { SeqExp { exps = exps } }
+  | func = ID "(" args = separated_list(",", exp) ")"                   { CallExp { func = func; args = args; loc = to_location($startpos)} }
+  | lv = lvalue                                                         { VarExp { var = lv } } 
+  | id = ID "{" fields = separated_list(",", field) "}"                 { RecordExp { typ = id; fields = fields;  loc = to_location($startpos) } }
+  | lv = lvalue ":=" e = exp                                            { AssignExp { var = lv; exp = e; loc = to_location($startpos)} }
+  | "if" test = exp "then" e1 = exp "else" e2 = exp                     { IfExp { test = test; then' = e1; else' = (Some e2); loc = to_location($startpos) } } 
+  | "if" test = exp "then" e = exp                                      { IfExp { test = test; then' = e; else' = None; loc = to_location($startpos) }  }
+  | "while" test = exp "do" body = exp                                  { WhileExp { test = test; body = body; loc = to_location($startpos) }}
+  | "for" id = ID ":=" lo = exp "to" hi = exp "do" body = exp           { ForExp { var = id; escape = ref true; lo = lo; hi = hi; body = body; loc = to_location($startpos) } }
+  | BREAK                                                               { BreakExp { loc = to_location($startpos) } }
+  | lv = lvalue "[" size = exp "]" "of" init = exp                      { match lv with
+                                                                           | SimpleVar { var = var; loc = loc} -> ArrayExp { typ = var; size = size; init = init; loc = loc } 
+                                                                           | _ -> BreakExp { loc = to_location($startpos)} }
+  | "let" decs = list(dec) "in" body = exp "end"                        { LetExp { decs = decs; body = body; loc = to_location($startpos) } }
 
-dec:
-      | tydec     { }
-      | vardec    { }
-      | fundec    { }
-
-tydec:
-      | "type" ID "=" ty { }
-
-ty:
-      | ID                                      {  }
-      | "{" separated_list(",", tyfield) "}"    {  }
-      | "array" "of" ID                         {  }
-
-tyfield:
-      | ID ":" ID       {  }
-
-vardec:
-      | "var" ID ":=" exp           {  }
-      | "var" ID ":" ID ":=" exp    {  }
+dec:  
+      | fds = nonempty_list(fundec)     { FunctionDec fds } 
+      | td = nonempty_list(tydec)       { TypeDec td } 
+      | vd = vardec                     { vd } 
 
 fundec:
-      | "function" ID "(" separated_list(",", tyfield) ")" "=" exp            {  }
-      | "function" ID "(" separated_list(",", tyfield) ")" ":" ID "=" exp     {  }
+      | "function" fname = ID "(" fparams = separated_list(",", tyfield) ")" "=" fbody = exp                      { { fname = fname; fparams = fparams; fresult = None; fbody = fbody; floc = to_location($startpos) } }
+      | "function" fname = ID "(" fparams = separated_list(",", tyfield) ")" ":" fresult = ID "=" fbody = exp     { let loc = to_location($startpos) in { fname = fname; fparams = fparams; fresult = Some((fresult, loc)); fbody = fbody; floc = loc } }
+
+
+tydec:
+      | "type" typ =  ID "=" ty = ty {  { tname = typ; tty = ty; tloc = to_location($startpos) } }
+
+
+vardec:
+      | "var" var = ID ":=" init = exp                 { let loc = to_location($startpos) in VarDec { name = var; escape = ref true; typ = None; init = init; loc = loc } }
+      | "var" var = ID ":" typ = ID ":=" init = exp    { let loc = to_location($startpos) in VarDec { name = var; escape = ref true; typ = Some (typ, loc); init = init; loc = loc } }
+
+
+ty:
+      | typ = ID                                             { NameTy { name = typ; loc = to_location($startpos)} }
+      | "{" tyfields = separated_list(",", tyfield) "}"      { RecordTy { fields = tyfields } }
+      | "array" "of" typ = ID                                { ArrayTy { name = typ; loc = to_location($startpos)} }
+
+tyfield:
+      | name = ID ":" typ = ID       { { name = name; escape = ref true; typ = typ; loc = to_location($startpos) } }
+
 
 
 field:
-      | ID "=" exp      { }
-      
+      | id = ID "=" e = exp      { (id, e, to_location($startpos)) }
+ 
 lvalue:
-      | ID {  }
-      | lvalue "." ID         {  }
-      | lvalue "[" exp "]"    {  }
+      | id = ID                           { SimpleVar { var = id; loc = to_location($startpos) } }
+      | lv = lvalue "." mem = ID          { FieldVar { var = lv; mem = mem; loc = to_location($startpos) } }
+      | lv = lvalue "[" e = exp "]"       { SubscriptVar { var = lv; exp = e; loc = to_location($startpos) } }
 
 
 %inline binop:
-  | PLUS    {  }
-  | MINUS   {  }
-  | TIMES   {  }
-  | DIV     {  }
-  | OR      {  }
-  | AND     {  }
-  | EQ      {  }
-  | NEQ     {  }
-  | LT      {  }
-  | LTE     {  } 
-  | GT      {  }
-  | GTE     {  }
+  | PLUS    { PlusOp }
+  | MINUS   { MinusOp }
+  | TIMES   { TimesOp }
+  | DIV     { DivideOp }
+  | OR      { OrOp }
+  | AND     { AndOp }
+  | EQ      { EqOp }
+  | NEQ     { NeqOp }
+  | LT      { LtOp }
+  | LTE     { LteOp } 
+  | GT      { GtOp }
+  | GTE     { GteOp }
 
