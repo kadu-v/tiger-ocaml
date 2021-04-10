@@ -74,10 +74,14 @@ exp:
                                                                            | _ -> BreakExp { loc = to_location($startpos)} }
   | "let" decs = list(dec) "in" body = exp "end"                        { LetExp { decs = decs; body = body; loc = to_location($startpos) } }
 
+
+
 dec:  
-      | fds = nonempty_list(fundec)     { FunctionDec fds } 
-      | td = nonempty_list(tydec)       { TypeDec td } 
-      | vd = vardec                     { vd } 
+      | fds = separated_nonempty_list(";", fundec)     { FunctionDec fds } 
+      | tds = separated_nonempty_list(";", tydec)      { TypeDec tds } 
+      | vd = vardec                                    { vd } 
+
+
 
 fundec:
       | "function" fname = ID "(" fparams = separated_list(",", tyfield) ")" "=" fbody = exp                      { { fname = fname; fparams = fparams; fresult = None; fbody = fbody; floc = to_location($startpos) } }
@@ -85,7 +89,7 @@ fundec:
 
 
 tydec:
-      | "type" typ =  ID "=" ty = ty {  { tname = typ; tty = ty; tloc = to_location($startpos) } }
+      | "type" typ = ID "=" ty = ty {  { tname = typ; tty = ty; tloc = to_location($startpos) } }
 
 
 vardec:
