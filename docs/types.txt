@@ -1,0 +1,124 @@
+## 型の定義
+Ty ::= Int 
+    | String 
+    | Unit
+    | Nil
+
+## 環境
+TE : 型変数 -> 型 
+VE : 式変数 -> 型 
+
+## 型規則
+---------------[base_nil]
+nil_exp : Nil 
+
+
+---------------[base_int]
+int_exp : Int
+
+
+-------------------[base_sting]
+string_exp : String
+
+
+VE |- x : Int   VE |- y : Int
+------------------------------------[op_exp]
+TE;VE |- x `bop` y : Int
+
+bop ::= + | - | * | / | & | |
+
+
+TE;VE |- e1 : Ty1, ... ,en :Tyn
+--------------------------------[seq_exp]
+TE;VE |- e1;...;en : Tyn
+
+
+VE |- f : (Ty1,...,Tyn) -> Ty  TE;VE |- ei : Tyi
+-------------------------------------------------[call_exp]
+TE;VE |- f(e1,...,e2) : Ty
+
+
+x : Ty <= VE
+-----------------[simple_var_exp]
+VE |- x : Ty
+
+
+TE;VE |- lv : Record of {x1 : Ty1, ... , xn : Tyn}    1 <= m <= n
+-------------------------------------------------------------------[field_var_exp]
+TE;VE |- lv.xm : Tym
+
+
+TE;VE |- lv : Array of Ty    TE;VE |- i : Int
+---------------------------------------------------------[subscript_var_exp]
+TE;VE |- lv[i] : Ty
+
+
+TE;VE |- ty ~ Record of { x1 : Ty1,... xn : Tyn }     TE;VE |- ei : Tyi 
+---------------------------------------------------------------------[record_exp]
+TE;VE |- ty { x1 : e1,..., xn : en } : Ty
+
+
+TE;VE |- lv : Ty1   TE;VE |- e : Ty2
+--------------------------------------[assign_exp]
+TE;VE |- lv := e : Unit
+
+
+TE;VE |- e1 : Int   TE;VE |- e2 : Ty    TE;VE |- e3 : Ty
+---------------------------------------------------------[if_then_else_exp]
+TE;VE |- if e1 then e2 else e3 : Ty
+
+
+TE;VE |- e1 : Int   TE;VE |- e2 : Unit 
+----------------------------------------[if_then_exp]
+TE;VE |- if e1 then e2 : Unit
+
+
+TE;VE |- e1 : Int   TE;VE |- e2 : Unit
+---------------------------------------[while_exp]
+TE;VE |- while e1 do e2 : Unit
+
+
+TE;VE |- lo : Int    TE;VE |- hi : Int      TE;(x : Ty, VE) |- e : Unit
+------------------------------------------------------------------------[for_exp]
+TE;VE |- for x := lo to hi do e : Unit
+
+
+
+-----------------------------------------[break_exp]
+TE;VE |- break : Unit
+
+
+TE;VE |- tyv ~ Array of Ty  TE;VE |- e1 : Int   TE;VE |- e2 : Ty
+--------------------------------------------------------------------[array_exp]
+TE;VE |- tyv[e1] of e2 : Ty
+
+
+TE |- tyi   TE;VE |- ei : Tyi   (x1 : ty1,...,xn : tyn, TE);(y1 : Ty1,...,yn : Tyn,VE) |- e : Ty 
+----------------------------------------------------------------------------------------------------[let-exp]
+TE;VE |- let type x1 = ty1;...,type xn = tyn; var y1 = e1;...var yn = en in e end : Ty 
+
+
+
+TE |- Tyi   TE;VE |- e : Ty   
+--------------------------------------------------------------------[function_dec]
+TE;VE |- function f(x1: Ty1,...,xn: Tyn) = e : (Ty1,..,Tyn) -> Ty 
+
+
+TE |- Tyi   TE |- Ty    TE;VE |- e : Ty   
+--------------------------------------------------------------------[function_result_dec]
+TE;VE |- function f(x1: Ty1,...,xn: Tyn): Ty = e : (Ty1,..,Tyn) -> Ty 
+
+
+TE |- t ~ Ty    TE |- Ty  
+--------------------------[type_dec]
+TE;VE |- type t = Ty
+
+
+TE;VE |- e : Ty
+-------------------[var_dec]
+TE;VE |- var x = e 
+
+
+TE;VE |- e : Ty    TE |- Ty    
+----------------------------[var_dec]
+TE;VE |- var x : Ty = e 
