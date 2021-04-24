@@ -1,6 +1,6 @@
 type unique = unit ref
 
-type ty = INT | STRING | UNIT | NIL
+type ty = INT | STRING | UNIT | NIL [@@deriving show, eq]
 
 (* 
    | RECORD of (Symbol.symbol * ty) list * unique
@@ -10,7 +10,7 @@ type ty = INT | STRING | UNIT | NIL
 
 let actual_ty t = t
 
-let equal_ty ty1 ty2 =
+let equiv_ty ty1 ty2 =
   match (ty1, ty2) with
   | INT, INT -> true
   | STRING, STRING -> true
