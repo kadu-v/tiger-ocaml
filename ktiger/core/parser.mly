@@ -50,6 +50,7 @@
 
 %%
 
+
 program:
       | e = exp EOF { e }
 
@@ -73,7 +74,7 @@ exp:
                                                                            | SimpleVar { var = var; loc = loc} -> ArrayExp { typ = var; size = size; init = init; loc = loc } 
                                                                            | _ -> BreakExp { loc = to_location($startpos)} }
   | "let" decs = list(dec) "in" body = exp "end"                        { LetExp { decs = decs; body = body; loc = to_location($startpos) } }
-
+(*  | "let" decs = list(dec) "in" body = separated_list(";", exp) "end"   { LetExp { decs = decs; body = SeqExp { exps = body }; loc = to_location($startpos) } } *)
 
 
 dec:  
