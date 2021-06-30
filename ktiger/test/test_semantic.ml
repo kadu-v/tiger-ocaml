@@ -7,29 +7,29 @@ open Core.Symbol
 let test_semantic_literal =
   "test_semantic_literal"
   >::: [
-         test_check_exp "nil" "nil" base_venv base_venv NIL;
-         test_check_exp "break" "break" base_tenv base_venv UNIT;
-         test_check_exp "1" "1" base_tenv base_venv INT;
-         test_check_exp "120" "120" base_tenv base_venv INT;
-         test_check_exp "bar" "\"bar\"" base_tenv base_venv STRING;
-         test_check_exp "foo" "\"foo\"" base_tenv base_venv STRING;
+         test_check_exp "nil" "nil" base_venv base_tenv NIL;
+         test_check_exp "break" "break" base_venv base_tenv UNIT;
+         test_check_exp "1" "1" base_venv base_tenv INT;
+         test_check_exp "120" "120" base_venv base_tenv INT;
+         test_check_exp "bar" "\"bar\"" base_venv base_tenv STRING;
+         test_check_exp "foo" "\"foo\"" base_venv base_tenv STRING;
        ]
 
 let test_semantic_opexp =
   "test_semantic_opexp"
   >::: [
-         test_check_exp "1+1" "1+1" base_venv base_venv INT;
-         test_check_exp "1-2" "1-2" base_venv base_venv INT;
-         test_check_exp "11*13" "11*13" base_venv base_venv INT;
-         test_check_exp "13/7" "13/7" base_venv base_venv INT;
-         test_check_exp "1&0" "1&0" base_venv base_venv INT;
-         test_check_exp "1|2" "1|2" base_venv base_venv INT;
-         test_check_exp "1=1" "1=1" base_venv base_venv INT;
-         test_check_exp "1<>2" "1<>2" base_venv base_venv INT;
-         test_check_exp "11<=13" "11<=13" base_venv base_venv INT;
-         test_check_exp "13<7" "13<7" base_venv base_venv INT;
-         test_check_exp "11>=13" "11>=13" base_venv base_venv INT;
-         test_check_exp "13>7" "13>7" base_venv base_venv INT;
+         test_check_exp "1+1" "1+1" base_venv base_tenv INT;
+         test_check_exp "1-2" "1-2" base_venv base_tenv INT;
+         test_check_exp "11*13" "11*13" base_venv base_tenv INT;
+         test_check_exp "13/7" "13/7" base_venv base_tenv INT;
+         test_check_exp "1&0" "1&0" base_venv base_tenv INT;
+         test_check_exp "1|2" "1|2" base_venv base_tenv INT;
+         test_check_exp "1=1" "1=1" base_venv base_tenv INT;
+         test_check_exp "1<>2" "1<>2" base_venv base_tenv INT;
+         test_check_exp "11<=13" "11<=13" base_venv base_tenv INT;
+         test_check_exp "13<7" "13<7" base_venv base_tenv INT;
+         test_check_exp "11>=13" "11>=13" base_venv base_tenv INT;
+         test_check_exp "13>7" "13>7" base_venv base_tenv INT;
        ]
 
 let test_semantic_seqexp =

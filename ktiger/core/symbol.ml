@@ -29,6 +29,7 @@ module Table = Map.Make (struct
 
   let compare (_, n1) (_, n2) = compare n1 n2
 end)
+[@@deriving show]
 
 type 'a table = 'a Table.t
 

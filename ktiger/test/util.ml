@@ -35,7 +35,7 @@ let test_parser name input expected =
   name >:: fun _ -> assert_equal expected ast ~printer:show_exp ~cmp:equal_exp
 
 (* Compare the  *)
-let test_check_exp name input tenv venv expected =
+let test_check_exp name input venv tenv expected =
   let ast = string_parser input in
-  let ty = check_exp ast tenv venv in
-  name >:: fun _ -> assert_equal expected ty ~printer:show_ty ~cmp:equal_ty
+  let ty = check_exp ast venv tenv in
+  name >:: fun _ -> assert_equal expected ty ~printer:show_ty ~cmp:equiv_ty
