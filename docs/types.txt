@@ -9,17 +9,24 @@ TE : 型変数 -> 型
 VE : 式変数 -> 型 
 
 ## 型規則
+
+ok
+
 ---------------[base_nil]
 nil_exp : Nil 
 
 
+ok 
+
 ---------------[base_int]
 int_exp : Int
 
+ok
 
 -------------------[base_sting]
 string_exp : String
 
+ok
 
 VE |- x : Int   VE |- y : Int
 ------------------------------------[op_exp]
@@ -27,6 +34,7 @@ TE;VE |- x `bop` y : Int
 
 bop ::= + | - | * | / | & | |
 
+ok
 
 TE;VE |- e1 : Ty1, ... ,en :Tyn
 --------------------------------[seq_exp]

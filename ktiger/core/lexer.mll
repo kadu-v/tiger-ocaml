@@ -54,8 +54,11 @@ rule token = parse
     | ":="                  { ASSIGN } 
     | litint as num         { INT (int_of_string num) }
     | ident as id           { ID id }
-    | "\"" _* "\"" as str   { let s = String.sub str 1 ((String.length str) - 2) in STR(s) }
+    | "\""   { lex_string (Buffer.create 16) lexbuf }
     | "/*" _* "*/"          { token lexbuf } 
     | _ as c                { raise (Error (Printf.sprintf "At offset %d: unexpected character %c.\n" (Lexing.lexeme_start lexbuf) c)) }
 
+and lex_string buf = parse
+    | "\""   { STR (Buffer.contents buf) }
+    | _ as c { Buffer.add_char buf c; lex_string buf lexbuf }
     
