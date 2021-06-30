@@ -9,10 +9,14 @@ let check_ty ty1 ty2 =
 
 let rec check_exp exp venv tenv =
   match exp with
+  (* リテラル *)
   | A.NilExp { loc } -> T.NIL
   | A.IntExp { loc } -> T.INT
   | A.StringExp { loc } -> T.STRING
   | A.BreakExp { loc } -> T.UNIT
+  (* 
+   * 四則演算の型チェック
+   *)
   | A.OpExp { oper; left; right; loc } -> (
       let ty1 = check_exp left venv tenv in
       let ty2 = check_exp right venv tenv in
@@ -30,12 +34,25 @@ let rec check_exp exp venv tenv =
           check_ty ty1 T.INT;
           check_ty ty2 T.INT;
           T.INT )
+  (* 
+   * シーケンスの型チェック
+   * 1+1; 1 > 0; nil 
+   *)
   | SeqExp { exps } ->
       let ty =
         List.fold_left (fun _ exp1 -> check_exp exp1 venv tenv) UNIT exps
       in
       ty
+  (* 
+   * 変数の型チェック
+   * x, y, z
+   *)
   | VarExp { var } -> check_var var venv
+  (* 
+   * If式の型チェック
+   * if x > 0 then 1 else 2
+   * if 1 = 0 then unit
+   *)
   | IfExp { test; then'; else'; loc } -> (
       let ty1 = check_exp test tenv venv in
       let ty2 = check_exp then' tenv venv in
